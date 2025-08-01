@@ -122,8 +122,8 @@ def main():
     st.markdown("---")
     st.subheader("🛠️ Available Tools")
     
-    # Tool 1: CSV Table Joiner
-    st.markdown("### 🔗 CSV Table Joiner 🔥 **MOST POPULAR**")
+    # Tool 1: CSV Join Table App
+    st.markdown("### 🔗 CSV Join Table App 🔥 **MOST POPULAR**")
     st.markdown("**Join and merge CSV files with advanced matching capabilities**")
     st.markdown("Perfect for combining datasets from different sources with intelligent fuzzy matching algorithms.")
     st.markdown("**Key Features:** Fuzzy Matching • Multiple Join Types • Duplicate Removal • Smart Column Mapping")
@@ -131,8 +131,8 @@ def main():
     st.markdown("**Input:** Two CSV files | **Output:** Merged dataset with match statistics")
     st.markdown("")
     
-    # Tool 2: Text Classification Word Metrics
-    st.markdown("### 📊 Text Classification Word Metrics Analyzer")
+    # Tool 2: Classifier Word Metric App
+    st.markdown("### 📊 Classifier Word Metric App")
     st.markdown("**Analyze text classification performance with detailed word-level metrics**")
     st.markdown("Deep dive into your text data with comprehensive analysis at both statement and ID levels.")
     st.markdown("**Key Features:** Word-Level Analysis • Custom Classifiers • ID Aggregation • Export Configs")
@@ -140,8 +140,8 @@ def main():
     st.markdown("**Input:** CSV with ID and text columns | **Output:** Detailed metrics and statistics")
     st.markdown("")
     
-    # Tool 3: Dictionary-Based Text Classifier
-    st.markdown("### 📚 Dictionary-Based Text Classifier")
+    # Tool 3: Dictionary Classifier Creation App 
+    st.markdown("### 📚 Dictionary Classifier Creation App")
     st.markdown("**Advanced text classification using customizable keyword dictionaries**")
     st.markdown("Classify text data with continuous variables, visualizations, and comprehensive reporting.")
     st.markdown("**Key Features:** Custom Dictionaries • Continuous Variables • Visual Analytics • Real-time Results")
@@ -149,8 +149,8 @@ def main():
     st.markdown("**Input:** CSV with text data | **Output:** Classifications with confidence scores")
     st.markdown("")
     
-    # Tool 4: Simple Dictionary Classifier
-    st.markdown("### 🏷️ Simple Dictionary Text Classifier")
+    # Tool 4: Dictionary Refinement App
+    st.markdown("### 🏷️ Dictionary Refinement App")
     st.markdown("**Fast and straightforward text classification for quick insights**")
     st.markdown("Streamlined keyword matching with binary classifications and easy-to-understand results.")
     st.markdown("**Key Features:** Quick Setup • Binary Classification • Keyword Tracking • Simple Interface")
@@ -210,8 +210,8 @@ def main():
     with col2:
         st.markdown("""
         **🎯 Tool Selection Guide**
-        - **Choose Table Joiner** when you need to combine data from multiple sources
-        - **Choose Word Metrics Analyzer** for detailed text analysis with custom categories
+        - **Choose Join Table App** when you need to combine data from multiple sources
+        - **Choose Classifier Word Metric Apps** for detailed text analysis with custom categories
         - **Choose Dictionary Classifier** for comprehensive text classification with visualizations
         - **Choose Simple Classifier** for quick, straightforward text categorization
         """)
@@ -237,7 +237,7 @@ def main():
     st.sidebar.markdown("---")
     st.sidebar.markdown("""
     **Quick Navigation:**
-    - 🔗 Table Joiner
+    - 🔗 Join Table App
     - 📊 Word Metrics  
     - 📚 Dictionary Classifier
     - 🏷️ Simple Classifier
