@@ -5,8 +5,20 @@ import json
 from typing import Dict, List, Union
 from collections import defaultdict
 import io
-import plotly.express as px
-import plotly.graph_objects as go
+
+# Try to import plotly, fall back to matplotlib if not available
+try:
+    import plotly.express as px
+    import plotly.graph_objects as go
+    PLOTLY_AVAILABLE = True
+except ImportError:
+    PLOTLY_AVAILABLE = False
+    try:
+        import matplotlib.pyplot as plt
+        import seaborn as sns
+        MATPLOTLIB_AVAILABLE = True
+    except ImportError:
+        MATPLOTLIB_AVAILABLE = False
 
 class DictionaryClassifier:
     """Enhanced dictionary-based text classifier with continuous variables."""
@@ -129,6 +141,92 @@ def create_sample_data():
         {'id': 'TEST005', 'Statement': 'Made to order custom solutions for your individual needs.', 'likes': 12, 'comments': 5}
     ])
 
+def create_plotly_charts(summary, classified_df):
+    """Create Plotly charts if available."""
+    charts = {}
+    
+    # Category frequency bar chart
+    categories = []
+    posts = []
+    percentages = []
+    
+    for category, data in summary['category_frequency'].items():
+        categories.append(category.replace('_', ' ').title())
+        posts.append(data['posts'])
+        percentages.append(data['percentage'])
+    
+    charts['bar_chart'] = px.bar(
+        x=categories,
+        y=posts,
+        title="Posts with Matches by Category",
+        labels={'x': 'Category', 'y': 'Number of Posts'},
+        text=posts
+    )
+    charts['bar_chart'].update_traces(texttemplate='%{text}', textposition='outside')
+    
+    # Percentage pie chart
+    charts['pie_chart'] = px.pie(
+        values=posts,
+        names=categories,
+        title="Distribution of Matches Across Categories"
+    )
+    
+    # Word percentage heatmap
+    avg_percentages = [summary['avg_percentages'][cat] for cat in summary['avg_percentages'].keys()]
+    category_names = [cat.replace('_', ' ').title() for cat in summary['avg_percentages'].keys()]
+    
+    charts['heatmap'] = go.Figure(data=go.Heatmap(
+        z=[avg_percentages],
+        x=category_names,
+        y=['Average %'],
+        colorscale='Blues',
+        text=[[f"{val:.4f}%" for val in avg_percentages]],
+        texttemplate="%{text}",
+        textfont={"size": 12}
+    ))
+    
+    charts['heatmap'].update_layout(
+        title="Average Word Percentages by Category",
+        xaxis_title="Category",
+        height=200
+    )
+    
+    # Top keywords bar chart
+    if summary['keyword_frequency']:
+        top_keywords = sorted(summary['keyword_frequency'].items(), key=lambda x: x[1], reverse=True)[:10]
+        keywords, frequencies = zip(*top_keywords)
+        
+        charts['keywords_chart'] = px.bar(
+            x=list(frequencies),
+            y=list(keywords),
+            orientation='h',
+            title="Top 10 Most Frequent Keywords",
+            labels={'x': 'Frequency', 'y': 'Keywords'},
+            text=frequencies
+        )
+        charts['keywords_chart'].update_traces(texttemplate='%{text}', textposition='outside')
+        charts['keywords_chart'].update_layout(height=400)
+    
+    return charts
+
+def create_streamlit_charts(summary):
+    """Create Streamlit native charts as fallback."""
+    # Category frequency
+    categories = []
+    posts = []
+    
+    for category, data in summary['category_frequency'].items():
+        categories.append(category.replace('_', ' ').title())
+        posts.append(data['posts'])
+    
+    # Create DataFrame for charts
+    chart_data = pd.DataFrame({
+        'Category': categories,
+        'Posts': posts
+    })
+    
+    return chart_data
+
 def main():
     st.set_page_config(
         page_title="Dictionary Text Classifier",
@@ -138,6 +236,10 @@ def main():
     
     st.title("📚 Dictionary-Based Text Classifier")
     st.markdown("**Analyze text data using customizable keyword dictionaries with continuous variables**")
+    
+    # Show library availability info
+    if not PLOTLY_AVAILABLE and not MATPLOTLIB_AVAILABLE:
+        st.info("📊 For enhanced visualizations, consider installing plotly: `pip install plotly`")
     
     # Initialize session state
     if 'classifier' not in st.session_state:
@@ -441,79 +543,51 @@ def main():
             classified_df = st.session_state.classified_data
             summary = st.session_state.summary
             
-            # Category frequency bar chart
-            st.subheader("📊 Category Frequency")
-            
-            categories = []
-            posts = []
-            percentages = []
-            
-            for category, data in summary['category_frequency'].items():
-                categories.append(category.replace('_', ' ').title())
-                posts.append(data['posts'])
-                percentages.append(data['percentage'])
-            
-            fig_bar = px.bar(
-                x=categories,
-                y=posts,
-                title="Posts with Matches by Category",
-                labels={'x': 'Category', 'y': 'Number of Posts'},
-                text=posts
-            )
-            fig_bar.update_traces(texttemplate='%{text}', textposition='outside')
-            st.plotly_chart(fig_bar, use_container_width=True)
-            
-            # Percentage pie chart
-            st.subheader("🥧 Category Distribution")
-            
-            fig_pie = px.pie(
-                values=posts,
-                names=categories,
-                title="Distribution of Matches Across Categories"
-            )
-            st.plotly_chart(fig_pie, use_container_width=True)
-            
-            # Word percentage heatmap
-            st.subheader("🌡️ Average Word Percentages")
-            
-            avg_percentages = [summary['avg_percentages'][cat] for cat in summary['avg_percentages'].keys()]
-            category_names = [cat.replace('_', ' ').title() for cat in summary['avg_percentages'].keys()]
-            
-            fig_heatmap = go.Figure(data=go.Heatmap(
-                z=[avg_percentages],
-                x=category_names,
-                y=['Average %'],
-                colorscale='Blues',
-                text=[[f"{val:.4f}%" for val in avg_percentages]],
-                texttemplate="%{text}",
-                textfont={"size": 12}
-            ))
-            
-            fig_heatmap.update_layout(
-                title="Average Word Percentages by Category",
-                xaxis_title="Category",
-                height=200
-            )
-            st.plotly_chart(fig_heatmap, use_container_width=True)
-            
-            # Top keywords bar chart
-            if summary['keyword_frequency']:
-                st.subheader("🔑 Top Keywords Frequency")
+            if PLOTLY_AVAILABLE:
+                # Use Plotly charts
+                charts = create_plotly_charts(summary, classified_df)
                 
-                top_keywords = sorted(summary['keyword_frequency'].items(), key=lambda x: x[1], reverse=True)[:10]
-                keywords, frequencies = zip(*top_keywords)
+                # Category frequency bar chart
+                st.subheader("📊 Category Frequency")
+                st.plotly_chart(charts['bar_chart'], use_container_width=True)
                 
-                fig_keywords = px.bar(
-                    x=list(frequencies),
-                    y=list(keywords),
-                    orientation='h',
-                    title="Top 10 Most Frequent Keywords",
-                    labels={'x': 'Frequency', 'y': 'Keywords'},
-                    text=frequencies
-                )
-                fig_keywords.update_traces(texttemplate='%{text}', textposition='outside')
-                fig_keywords.update_layout(height=400)
-                st.plotly_chart(fig_keywords, use_container_width=True)
+                # Percentage pie chart
+                st.subheader("🥧 Category Distribution")
+                st.plotly_chart(charts['pie_chart'], use_container_width=True)
+                
+                # Word percentage heatmap
+                st.subheader("🌡️ Average Word Percentages")
+                st.plotly_chart(charts['heatmap'], use_container_width=True)
+                
+                # Top keywords bar chart
+                if 'keywords_chart' in charts:
+                    st.subheader("🔑 Top Keywords Frequency")
+                    st.plotly_chart(charts['keywords_chart'], use_container_width=True)
+                    
+            else:
+                # Use Streamlit native charts as fallback
+                st.info("📊 Using Streamlit native charts. Install plotly for enhanced visualizations.")
+                
+                chart_data = create_streamlit_charts(summary)
+                
+                # Category frequency bar chart
+                st.subheader("📊 Category Frequency")
+                st.bar_chart(chart_data.set_index('Category')['Posts'])
+                
+                # Simple metrics display
+                st.subheader("🌡️ Average Word Percentages")
+                for category, avg_pct in summary['avg_percentages'].items():
+                    st.metric(
+                        label=category.replace('_', ' ').title(),
+                        value=f"{avg_pct:.4f}%"
+                    )
+                
+                # Top keywords table
+                if summary['keyword_frequency']:
+                    st.subheader("🔑 Top Keywords Frequency")
+                    top_keywords = sorted(summary['keyword_frequency'].items(), key=lambda x: x[1], reverse=True)[:10]
+                    keyword_df = pd.DataFrame(top_keywords, columns=['Keyword', 'Frequency'])
+                    st.dataframe(keyword_df, hide_index=True)
 
 if __name__ == "__main__":
     main()
