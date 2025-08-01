@@ -189,21 +189,6 @@ class ClassifierWordMetrics:
             'classifiers': classifier_stats
         }
 
-def create_sample_data():
-    """Create sample data for demonstration."""
-    return pd.DataFrame([
-        {'id': 'USER001', 'Statement': 'Limited time offer - get exclusive access to our premium custom service!', 'category': 'marketing'},
-        {'id': 'USER001', 'Statement': 'Thank you for choosing our personalized solutions.', 'category': 'service'},
-        {'id': 'USER002', 'Statement': 'Hurry now - final sale on all items while supplies last!', 'category': 'marketing'},
-        {'id': 'USER002', 'Statement': 'VIP members get special access to our bespoke products.', 'category': 'marketing'},
-        {'id': 'USER003', 'Statement': 'Local community business serving the neighborhood for 20 years.', 'category': 'business'},
-        {'id': 'USER003', 'Statement': 'Grateful for all our loyal customers and their reviews.', 'category': 'service'},
-        {'id': 'USER004', 'Statement': 'Custom tailored solutions for individual needs.', 'category': 'service'},
-        {'id': 'USER004', 'Statement': 'Exclusive deal today only - save 50% off premium service!', 'category': 'marketing'},
-        {'id': 'USER005', 'Statement': 'Special discount for local customers in our community.', 'category': 'marketing'},
-        {'id': 'USER005', 'Statement': 'Personalized thank you notes for all our valued clients.', 'category': 'service'}
-    ])
-
 def main():
     st.set_page_config(
         page_title="Text Classification Word Metrics",
@@ -225,17 +210,6 @@ def main():
     # Sidebar for configuration
     with st.sidebar:
         st.header("⚙️ Configuration")
-        
-        # Sample data option
-        if st.button("📋 Load Sample Data"):
-            sample_df = create_sample_data()
-            load_info = st.session_state.analyzer.load_data(sample_df, "id", "Statement")
-            st.session_state.data_loaded = True
-            st.session_state.analysis_completed = False
-            st.session_state.sample_data = sample_df
-            st.success("Sample data loaded!")
-        
-        st.divider()
         
         # Keyword mappings management
         st.subheader("🏷️ Keyword Mappings")
@@ -338,18 +312,17 @@ def main():
     
     with tab2:
         if not st.session_state.data_loaded:
-            st.warning("⚠️ Please upload data or load sample data first.")
+            st.warning("⚠️ Please upload data first.")
         else:
             st.subheader("🔄 Run Analysis")
             
             # Show loaded data info
-            data_source = "Sample Data" if hasattr(st.session_state, 'sample_data') else "Uploaded Data"
-            current_data = getattr(st.session_state, 'sample_data', None) or getattr(st.session_state, 'uploaded_data', None)
+            current_data = getattr(st.session_state, 'uploaded_data', None)
             
             if current_data is not None:
                 col1, col2, col3 = st.columns(3)
                 with col1:
-                    st.metric("Data Source", data_source)
+                    st.metric("Data Source", "Uploaded Data")
                 with col2:
                     st.metric("Total Rows", len(current_data))
                 with col3:
