@@ -39,7 +39,15 @@ class DictionaryClassifier:
                                       'insider', 'private sale', 'early access']
             }
         else:
-            self.dictionaries = dictionaries
+            # Ensure all dictionary values are lists
+            self.dictionaries = {}
+            for key, value in dictionaries.items():
+                if isinstance(value, (list, tuple)):
+                    self.dictionaries[key] = list(value)
+                elif isinstance(value, set):
+                    self.dictionaries[key] = list(value)
+                else:
+                    self.dictionaries[key] = [str(value)]
     
     def analyze_text(self, text: str) -> Dict[str, Union[int, float, List[str]]]:
         """Analyze single text with all categories."""
@@ -275,6 +283,8 @@ def main():
             
             if st.button("Add Dictionary") and new_dict_name and new_keywords:
                 keywords_list = [k.strip() for k in new_keywords.split('\n') if k.strip()]
+                # Ensure no duplicates and convert to list
+                keywords_list = list(set(keywords_list))  # Remove duplicates
                 st.session_state.classifier.dictionaries[new_dict_name] = keywords_list
                 st.success(f"Added dictionary: {new_dict_name}")
                 st.rerun()
@@ -296,6 +306,8 @@ def main():
                 with col1:
                     if st.button("Update", key=f"update_{dict_name}"):
                         keywords_list = [k.strip() for k in edited_keywords.split('\n') if k.strip()]
+                        # Ensure no duplicates and convert to list
+                        keywords_list = list(set(keywords_list))  # Remove duplicates
                         st.session_state.classifier.dictionaries[dict_name] = keywords_list
                         st.success(f"Updated {dict_name}")
                         st.rerun()
@@ -312,21 +324,45 @@ def main():
         st.subheader("⚙️ Import/Export")
         
         # Export current dictionaries
-        dict_json = json.dumps(st.session_state.classifier.dictionaries, indent=2)
-        st.download_button(
-            label="📥 Export Dictionaries (JSON)",
-            data=dict_json,
-            file_name="dictionaries.json",
-            mime="application/json"
-        )
+        try:
+            # Ensure all dictionary values are lists (not sets or other types)
+            clean_dictionaries = {}
+            for key, value in st.session_state.classifier.dictionaries.items():
+                if isinstance(value, (list, tuple)):
+                    clean_dictionaries[key] = list(value)
+                elif isinstance(value, set):
+                    clean_dictionaries[key] = list(value)
+                else:
+                    clean_dictionaries[key] = [str(value)]
+            
+            dict_json = json.dumps(clean_dictionaries, indent=2)
+            st.download_button(
+                label="📥 Export Dictionaries (JSON)",
+                data=dict_json,
+                file_name="dictionaries.json",
+                mime="application/json"
+            )
+        except Exception as e:
+            st.error(f"Error exporting dictionaries: {e}")
+            st.info("Try refreshing the page or recreating the dictionaries.")
         
         # Import dictionaries
         uploaded_dict = st.file_uploader("Upload dictionaries JSON:", type=['json'])
         if uploaded_dict is not None:
             try:
                 dict_data = json.load(uploaded_dict)
+                # Validate and clean imported data
+                cleaned_dict_data = {}
+                for key, value in dict_data.items():
+                    if isinstance(value, (list, tuple)):
+                        cleaned_dict_data[key] = list(value)
+                    elif isinstance(value, set):
+                        cleaned_dict_data[key] = list(value)
+                    else:
+                        cleaned_dict_data[key] = [str(value)]
+                
                 if st.button("Import Dictionaries"):
-                    st.session_state.classifier.dictionaries = dict_data
+                    st.session_state.classifier.dictionaries = cleaned_dict_data
                     st.success("Dictionaries imported successfully!")
                     st.rerun()
             except Exception as e:
