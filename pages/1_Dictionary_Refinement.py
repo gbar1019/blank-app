@@ -100,21 +100,6 @@ class SimpleDictionaryClassifier:
         
         return summary
 
-def create_sample_data():
-    """Create sample data for demonstration."""
-    return pd.DataFrame([
-        {'ID': 'POST001', 'Statement': 'Limited time offer - get it before it\'s gone!', 'category': 'marketing'},
-        {'ID': 'POST002', 'Statement': 'Exclusive deal for VIP members only today.', 'category': 'marketing'},
-        {'ID': 'POST003', 'Statement': 'Great product with excellent quality and service.', 'category': 'general'},
-        {'ID': 'POST004', 'Statement': 'Hurry up! Final hours to get this special access.', 'category': 'marketing'},
-        {'ID': 'POST005', 'Statement': 'Thank you for your continued support and loyalty.', 'category': 'service'},
-        {'ID': 'POST006', 'Statement': 'Order now while supplies last - limited edition available!', 'category': 'marketing'},
-        {'ID': 'POST007', 'Statement': 'Premium quality service for our privileged customers.', 'category': 'service'},
-        {'ID': 'POST008', 'Statement': 'Regular updates and news about our products and services.', 'category': 'general'},
-        {'ID': 'POST009', 'Statement': 'Don\'t wait - this exclusive offer expires soon!', 'category': 'marketing'},
-        {'ID': 'POST010', 'Statement': 'Join our community for early access to new features.', 'category': 'community'}
-    ])
-
 def main():
     st.set_page_config(
         page_title="Simple Dictionary Classifier",
@@ -133,24 +118,11 @@ def main():
     if 'analysis_completed' not in st.session_state:
         st.session_state.analysis_completed = False
     
-    # Sidebar for quick actions and dictionary view
+    # Sidebar for dictionary management
     with st.sidebar:
-        st.header("🚀 Quick Actions")
-        
-        # Load sample data
-        if st.button("📋 Load Sample Data", type="primary"):
-            sample_df = create_sample_data()
-            st.session_state.sample_data = sample_df
-            st.session_state.data_loaded = True
-            st.session_state.analysis_completed = False
-            st.success("Sample data loaded!")
-            st.rerun()
-        
-        st.divider()
+        st.header("📚 Dictionary Management")
         
         # Dictionary overview
-        st.header("📚 Current Dictionaries")
-        
         for category, keywords in st.session_state.classifier.dictionaries.items():
             with st.expander(f"📖 {category.replace('_', ' ').title()} ({len(keywords)} keywords)"):
                 keywords_text = '\n'.join(sorted(keywords))
@@ -179,6 +151,41 @@ def main():
                 st.session_state.classifier.dictionaries[new_dict_name] = keywords_set
                 st.success(f"Added {new_dict_name}!")
                 st.rerun()
+        
+        st.divider()
+        
+        # Dictionary import/export
+        st.subheader("⚙️ Import/Export")
+        
+        # Export current dictionaries
+        dict_export = {}
+        for category, keywords in st.session_state.classifier.dictionaries.items():
+            dict_export[category] = list(keywords)
+        
+        dict_json = json.dumps(dict_export, indent=2)
+        st.download_button(
+            label="📥 Export Dictionaries (JSON)",
+            data=dict_json,
+            file_name="dictionaries.json",
+            mime="application/json"
+        )
+        
+        # Import dictionaries
+        uploaded_dict = st.file_uploader("📤 Import Dictionaries (JSON):", type=['json'])
+        if uploaded_dict is not None:
+            try:
+                dict_data = json.load(uploaded_dict)
+                if st.button("Import Dictionaries"):
+                    # Convert lists back to sets
+                    imported_dicts = {}
+                    for category, keywords in dict_data.items():
+                        imported_dicts[category] = set(keywords)
+                    
+                    st.session_state.classifier.dictionaries = imported_dicts
+                    st.success("Dictionaries imported successfully!")
+                    st.rerun()
+            except Exception as e:
+                st.error(f"Error importing dictionaries: {e}")
     
     # Main content
     tab1, tab2, tab3 = st.tabs(["📁 Data Input", "🔍 Classification", "📊 Results"])
@@ -228,7 +235,7 @@ def main():
             """)
             
             if st.session_state.data_loaded:
-                current_data = getattr(st.session_state, 'sample_data', None) or getattr(st.session_state, 'uploaded_data', None)
+                current_data = getattr(st.session_state, 'uploaded_data', None)
                 if current_data is not None:
                     st.success(f"✅ Data loaded: {len(current_data)} rows")
     
@@ -239,7 +246,7 @@ def main():
             st.subheader("🔍 Run Classification")
             
             # Show current setup
-            current_data = getattr(st.session_state, 'sample_data', None) or getattr(st.session_state, 'uploaded_data', None)
+            current_data = getattr(st.session_state, 'uploaded_data', None)
             text_column = getattr(st.session_state, 'text_column', 'Statement')
             
             col1, col2, col3 = st.columns(3)
@@ -397,39 +404,6 @@ def main():
                     mime="text/csv",
                     use_container_width=True
                 )
-            
-            # Export dictionaries
-            st.subheader("⚙️ Export Configuration")
-            
-            # Convert sets to lists for JSON serialization
-            dict_export = {}
-            for category, keywords in st.session_state.classifier.dictionaries.items():
-                dict_export[category] = list(keywords)
-            
-            dict_json = json.dumps(dict_export, indent=2)
-            st.download_button(
-                label="📥 Export Dictionaries (JSON)",
-                data=dict_json,
-                file_name="dictionaries.json",
-                mime="application/json"
-            )
-            
-            # Import dictionaries
-            uploaded_dict = st.file_uploader("📤 Import Dictionaries (JSON):", type=['json'])
-            if uploaded_dict is not None:
-                try:
-                    dict_data = json.load(uploaded_dict)
-                    if st.button("Import Dictionaries"):
-                        # Convert lists back to sets
-                        imported_dicts = {}
-                        for category, keywords in dict_data.items():
-                            imported_dicts[category] = set(keywords)
-                        
-                        st.session_state.classifier.dictionaries = imported_dicts
-                        st.success("Dictionaries imported successfully!")
-                        st.rerun()
-                except Exception as e:
-                    st.error(f"Error importing dictionaries: {e}")
 
 if __name__ == "__main__":
     main()
