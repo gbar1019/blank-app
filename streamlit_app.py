@@ -122,8 +122,8 @@ def main():
     st.markdown("---")
     st.subheader("🛠️ Available Tools")
     
-    # Tool 1: CSV Join Table App
-    st.markdown("### 🔗 CSV Join Table App 🔥 **MOST POPULAR**")
+    # Tool 1: Join Table App
+    st.markdown("### 🔗 Join Table App 🔥 **MOST POPULAR**")
     st.markdown("**Join and merge CSV files with advanced matching capabilities**")
     st.markdown("Perfect for combining datasets from different sources with intelligent fuzzy matching algorithms.")
     st.markdown("**Key Features:** Fuzzy Matching • Multiple Join Types • Duplicate Removal • Smart Column Mapping")
