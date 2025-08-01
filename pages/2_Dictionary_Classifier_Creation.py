@@ -134,21 +134,6 @@ class DictionaryClassifier:
         
         return summary
 
-def create_sample_data():
-    """Create sample data for demonstration."""
-    return pd.DataFrame([
-        {'id': 'CKPXcrzsYTh', 'Statement': 'No problem.', 'likes': 0, 'comments': 0},
-        {'id': 'B_ngLlvhNKJ', 'Statement': 'Refined in its look, soft, stretchy to the touch, and remarkably comfortable.', 'likes': 1, 'comments': 1},
-        {'id': 'CNAS39lLnDd', 'Statement': 'But most importantly, I will continuously remember and practice the core values of excellence.', 'likes': 0, 'comments': 0},
-        {'id': 'CMkjP5wLJlp', 'Statement': 'The whites and blues you\'ve been wearing for years are getting old and worn out.', 'likes': 0, 'comments': 0},
-        {'id': 'CM8gKlLJcV', 'Statement': 'Congrats to the newlyweds, Jake & Micah!', 'likes': 0, 'comments': 0},
-        {'id': 'TEST001', 'Statement': 'Our custom tailored suits are personalized just for you with bespoke fitting.', 'likes': 15, 'comments': 8},
-        {'id': 'TEST002', 'Statement': 'Limited time only - exclusive offer for VIP members while supplies last!', 'likes': 23, 'comments': 12},
-        {'id': 'TEST003', 'Statement': 'Classic timeless luxury style that never goes out of fashion.', 'likes': 7, 'comments': 3},
-        {'id': 'TEST004', 'Statement': 'Get exclusive access to our premium personalized service today only!', 'likes': 31, 'comments': 15},
-        {'id': 'TEST005', 'Statement': 'Made to order custom solutions for your individual needs.', 'likes': 12, 'comments': 5}
-    ])
-
 def create_plotly_charts(summary, classified_df):
     """Create Plotly charts if available."""
     charts = {}
@@ -260,16 +245,6 @@ def main():
     # Sidebar for dictionary management
     with st.sidebar:
         st.header("📖 Dictionary Management")
-        
-        # Sample data option
-        if st.button("📋 Load Sample Data"):
-            sample_df = create_sample_data()
-            st.session_state.sample_data = sample_df
-            st.session_state.data_loaded = True
-            st.session_state.analysis_completed = False
-            st.success("Sample data loaded!")
-        
-        st.divider()
         
         # Dictionary management
         st.subheader("🏷️ Keyword Dictionaries")
@@ -414,19 +389,18 @@ def main():
     
     with tab2:
         if not st.session_state.data_loaded:
-            st.warning("⚠️ Please upload data or load sample data first.")
+            st.warning("⚠️ Please upload data first.")
         else:
             st.subheader("🔍 Run Classification Analysis")
             
             # Show loaded data info
-            data_source = "Sample Data" if hasattr(st.session_state, 'sample_data') else "Uploaded Data"
-            current_data = getattr(st.session_state, 'sample_data', None) or getattr(st.session_state, 'uploaded_data', None)
+            current_data = getattr(st.session_state, 'uploaded_data', None)
             text_column = getattr(st.session_state, 'text_column', 'Statement')
             
             if current_data is not None:
                 col1, col2, col3 = st.columns(3)
                 with col1:
-                    st.metric("Data Source", data_source)
+                    st.metric("Data Source", "Uploaded Data")
                 with col2:
                     st.metric("Total Rows", len(current_data))
                 with col3:
