@@ -240,27 +240,6 @@ class TableJoiner:
         
         return stats
 
-def create_sample_data():
-    """Create sample data for demonstration."""
-    # Sample data 1 - Customer information
-    customers = pd.DataFrame({
-        'customer_id': ['CUST001', 'CUST002', 'CUST003', 'CUST004', 'CUST005'],
-        'customer_name': ['John Smith', 'Jane Doe', 'Bob Johnson', 'Alice Brown', 'Charlie Wilson'],
-        'email': ['john@email.com', 'jane@email.com', 'bob@email.com', 'alice@email.com', 'charlie@email.com'],
-        'signup_date': ['2023-01-15', '2023-02-20', '2023-03-10', '2023-04-05', '2023-05-12']
-    })
-    
-    # Sample data 2 - Orders with slight variations in customer names (for fuzzy matching demo)
-    orders = pd.DataFrame({
-        'order_id': ['ORD001', 'ORD002', 'ORD003', 'ORD004', 'ORD005', 'ORD006'],
-        'customer': ['John Smith', 'Jane Doe', 'Robert Johnson', 'Alice Brown', 'Charlie Wilson', 'David Lee'],
-        'product': ['Widget A', 'Widget B', 'Widget C', 'Widget A', 'Widget B', 'Widget C'],
-        'amount': [99.99, 149.99, 199.99, 99.99, 149.99, 299.99],
-        'order_date': ['2023-06-01', '2023-06-02', '2023-06-03', '2023-06-04', '2023-06-05', '2023-06-06']
-    })
-    
-    return customers, orders
-
 def main():
     st.set_page_config(
         page_title="CSV Table Joiner",
@@ -278,18 +257,6 @@ def main():
         st.session_state.data_loaded = False
     if 'join_completed' not in st.session_state:
         st.session_state.join_completed = False
-    
-    # Sidebar for configuration
-    with st.sidebar:
-        st.header("⚙️ Configuration")
-        
-        # Sample data option
-        if st.button("📋 Load Sample Data"):
-            customers, orders = create_sample_data()
-            st.session_state.joiner.load_dataframes(customers, orders, "customers.csv", "orders.csv")
-            st.session_state.data_loaded = True
-            st.session_state.join_completed = False
-            st.success("Sample data loaded!")
     
     # Main content area
     col1, col2 = st.columns(2)
@@ -333,7 +300,7 @@ def main():
                 st.error(f"Error reading file: {e}")
     
     # Load data into joiner when both files are uploaded
-    if (hasattr(st.session_state, 'df1') and hasattr(st.session_state, 'df2')) or st.session_state.data_loaded:
+    if hasattr(st.session_state, 'df1') and hasattr(st.session_state, 'df2'):
         if not st.session_state.data_loaded:
             st.session_state.joiner.load_dataframes(
                 st.session_state.df1, 
@@ -352,20 +319,18 @@ def main():
         
         with config_col1:
             # Column selection
-            if st.session_state.joiner.data1 is not None:
-                left_column = st.selectbox(
-                    "Select column from first table:",
-                    options=list(st.session_state.joiner.data1.columns),
-                    key='left_col'
-                )
+            left_column = st.selectbox(
+                "Select column from first table:",
+                options=list(st.session_state.joiner.data1.columns),
+                key='left_col'
+            )
         
         with config_col2:
-            if st.session_state.joiner.data2 is not None:
-                right_column = st.selectbox(
-                    "Select column from second table:",
-                    options=list(st.session_state.joiner.data2.columns),
-                    key='right_col'
-                )
+            right_column = st.selectbox(
+                "Select column from second table:",
+                options=list(st.session_state.joiner.data2.columns),
+                key='right_col'
+            )
         
         with config_col3:
             join_type = st.selectbox(
