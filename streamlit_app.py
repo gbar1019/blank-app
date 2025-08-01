@@ -123,94 +123,42 @@ def main():
     st.subheader("🛠️ Available Tools")
     
     # Tool 1: CSV Table Joiner
-    st.markdown("""
-    <div class="tool-card">
-        <h3>🔗 CSV Table Joiner <span class="popular-indicator">🔥 MOST POPULAR</span></h3>
-        <p><strong>Join and merge CSV files with advanced matching capabilities</strong></p>
-        <p>Perfect for combining datasets from different sources with intelligent fuzzy matching algorithms.</p>
-        
-        <p><strong>Key Features:</strong> Fuzzy Matching • Multiple Join Types • Duplicate Removal • Smart Column Mapping</p>
-        
-        <p><strong>Best for:</strong> Data integration, customer matching, inventory reconciliation</p>
-        <p><strong>Input:</strong> Two CSV files | <strong>Output:</strong> Merged dataset with match statistics</p>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown("### 🔗 CSV Table Joiner 🔥 **MOST POPULAR**")
+    st.markdown("**Join and merge CSV files with advanced matching capabilities**")
+    st.markdown("Perfect for combining datasets from different sources with intelligent fuzzy matching algorithms.")
+    st.markdown("**Key Features:** Fuzzy Matching • Multiple Join Types • Duplicate Removal • Smart Column Mapping")
+    st.markdown("**Best for:** Data integration, customer matching, inventory reconciliation")
+    st.markdown("**Input:** Two CSV files | **Output:** Merged dataset with match statistics")
+    st.markdown("")
     
     # Tool 2: Text Classification Word Metrics
-    st.markdown("""
-    <div class="tool-card">
-        <h3>📊 Text Classification Word Metrics Analyzer</h3>
-        <p><strong>Analyze text classification performance with detailed word-level metrics</strong></p>
-        <p>Deep dive into your text data with comprehensive analysis at both statement and ID levels.</p>
-        
-        <p><strong>Key Features:</strong> Word-Level Analysis • Custom Classifiers • ID Aggregation • Export Configs</p>
-        
-        <p><strong>Best for:</strong> Content analysis, marketing research, sentiment studies</p>
-        <p><strong>Input:</strong> CSV with ID and text columns | <strong>Output:</strong> Detailed metrics and statistics</p>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown("### 📊 Text Classification Word Metrics Analyzer")
+    st.markdown("**Analyze text classification performance with detailed word-level metrics**")
+    st.markdown("Deep dive into your text data with comprehensive analysis at both statement and ID levels.")
+    st.markdown("**Key Features:** Word-Level Analysis • Custom Classifiers • ID Aggregation • Export Configs")
+    st.markdown("**Best for:** Content analysis, marketing research, sentiment studies")
+    st.markdown("**Input:** CSV with ID and text columns | **Output:** Detailed metrics and statistics")
+    st.markdown("")
     
     # Tool 3: Dictionary-Based Text Classifier
-    st.markdown("""
-    <div class="tool-card">
-        <h3>📚 Dictionary-Based Text Classifier</h3>
-        <p><strong>Advanced text classification using customizable keyword dictionaries</strong></p>
-        <p>Classify text data with continuous variables, visualizations, and comprehensive reporting.</p>
-        
-        <p><strong>Key Features:</strong> Custom Dictionaries • Continuous Variables • Visual Analytics • Real-time Results</p>
-        
-        <p><strong>Best for:</strong> Content categorization, theme analysis, automated tagging</p>
-        <p><strong>Input:</strong> CSV with text data | <strong>Output:</strong> Classifications with confidence scores</p>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown("### 📚 Dictionary-Based Text Classifier")
+    st.markdown("**Advanced text classification using customizable keyword dictionaries**")
+    st.markdown("Classify text data with continuous variables, visualizations, and comprehensive reporting.")
+    st.markdown("**Key Features:** Custom Dictionaries • Continuous Variables • Visual Analytics • Real-time Results")
+    st.markdown("**Best for:** Content categorization, theme analysis, automated tagging")
+    st.markdown("**Input:** CSV with text data | **Output:** Classifications with confidence scores")
+    st.markdown("")
     
     # Tool 4: Simple Dictionary Classifier
-    st.markdown("""
-    <div class="tool-card">
-        <h3>🏷️ Simple Dictionary Text Classifier</h3>
-        <p><strong>Fast and straightforward text classification for quick insights</strong></p>
-        <p>Streamlined keyword matching with binary classifications and easy-to-understand results.</p>
-        
-        <p><strong>Key Features:</strong> Quick Setup • Binary Classification • Keyword Tracking • Simple Interface</p>
-        
-        <p><strong>Best for:</strong> Quick content screening, simple categorization, proof of concepts</p>
-        <p><strong>Input:</strong> CSV with text column | <strong>Output:</strong> Binary classifications with matched keywords</p>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown("### 🏷️ Simple Dictionary Text Classifier")
+    st.markdown("**Fast and straightforward text classification for quick insights**")
+    st.markdown("Streamlined keyword matching with binary classifications and easy-to-understand results.")
+    st.markdown("**Key Features:** Quick Setup • Binary Classification • Keyword Tracking • Simple Interface")
+    st.markdown("**Best for:** Quick content screening, simple categorization, proof of concepts")
+    st.markdown("**Input:** CSV with text column | **Output:** Binary classifications with matched keywords")
+    st.markdown("")
     
-    # Quick Start Guide
-    st.markdown("---")
-    st.subheader("🚀 Quick Start Guide")
-    
-    st.markdown("""
-    <div class="quick-start">
-        <h4>Get Started in 3 Easy Steps:</h4>
-        
-        <div style="display: flex; align-items: center; margin: 1rem 0;">
-            <div style="background: #2196f3; color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; margin-right: 1rem; font-weight: bold;">1</div>
-            <div>
-                <strong>Choose Your Tool</strong><br>
-                Select the tab that matches your data analysis needs
-            </div>
-        </div>
-        
-        <div style="display: flex; align-items: center; margin: 1rem 0;">
-            <div style="background: #4caf50; color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; margin-right: 1rem; font-weight: bold;">2</div>
-            <div>
-                <strong>Upload Your Data</strong><br>
-                Simply drag and drop your CSV files or use the file uploader
-            </div>
-        </div>
-        
-        <div style="display: flex; align-items: center; margin: 1rem 0;">
-            <div style="background: #ff9800; color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; margin-right: 1rem; font-weight: bold;">3</div>
-            <div>
-                <strong>Get Results</strong><br>
-                Configure your analysis settings and download your processed data
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+
     
     # Use Cases Section
     st.markdown("---")
@@ -279,13 +227,9 @@ def main():
     
     # Footer
     st.markdown("---")
-    st.markdown("""
-    <div style="text-align: center; color: #666; padding: 2rem 0;">
-        <h4>Ready to Transform Your Data? 🚀</h4>
-        <p>Select any tool from the tabs above to get started with your analysis</p>
-        <p><em>Built with ❤️ using Streamlit • No data is stored on our servers • Everything runs in your browser</em></p>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown("#### Ready to Transform Your Data? 🚀")
+    st.markdown("Select any tool from the tabs above to get started with your analysis")
+    st.markdown("*Built with ❤️ using Streamlit • No data is stored on our servers • Everything runs in your browser*")
     
     # Optional: Add current time/date
     current_time = datetime.now().strftime("%B %d, %Y • %I:%M %p")
