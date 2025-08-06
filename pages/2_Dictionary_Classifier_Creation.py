@@ -39,13 +39,13 @@ class DictionaryClassifier:
                                       'insider', 'private sale', 'early access']
             }
         else:
-            # Ensure all dictionary values are lists
+            # Ensure all dictionary values are lists of strings
             self.dictionaries = {}
             for key, value in dictionaries.items():
                 if isinstance(value, (list, tuple)):
-                    self.dictionaries[key] = list(value)
+                    self.dictionaries[key] = [str(item) for item in value]
                 elif isinstance(value, set):
-                    self.dictionaries[key] = list(value)
+                    self.dictionaries[key] = [str(item) for item in value]
                 else:
                     self.dictionaries[key] = [str(value)]
     
@@ -54,7 +54,7 @@ class DictionaryClassifier:
         if pd.isna(text):
             text = ""
         
-        text_lower = text.lower()
+        text_lower = str(text).lower()
         words = re.findall(r'\b\w+\b', text_lower)
         total_words = len(words)
         
@@ -66,11 +66,11 @@ class DictionaryClassifier:
             
             for keyword in keywords:
                 # Use word boundaries for exact matching
-                pattern = r'\b' + re.escape(keyword.lower()) + r'\b'
+                pattern = r'\b' + re.escape(str(keyword).lower()) + r'\b'
                 matches = re.findall(pattern, text_lower)
                 if matches:
                     match_count += len(matches)
-                    matched_keywords.append(keyword)
+                    matched_keywords.append(str(keyword))
             
             # Calculate percentage
             percentage = (match_count / total_words * 100) if total_words > 0 else 0
@@ -130,7 +130,7 @@ class DictionaryClassifier:
                 matched_keywords = row[f'{category}_matched_keywords']
                 if isinstance(matched_keywords, list):
                     for keyword in matched_keywords:
-                        summary['keyword_frequency'][keyword] += 1
+                        summary['keyword_frequency'][str(keyword)] += 1
         
         return summary
 
@@ -187,18 +187,19 @@ def create_plotly_charts(summary, classified_df):
     # Top keywords bar chart
     if summary['keyword_frequency']:
         top_keywords = sorted(summary['keyword_frequency'].items(), key=lambda x: x[1], reverse=True)[:10]
-        keywords, frequencies = zip(*top_keywords)
-        
-        charts['keywords_chart'] = px.bar(
-            x=list(frequencies),
-            y=list(keywords),
-            orientation='h',
-            title="Top 10 Most Frequent Keywords",
-            labels={'x': 'Frequency', 'y': 'Keywords'},
-            text=frequencies
-        )
-        charts['keywords_chart'].update_traces(texttemplate='%{text}', textposition='outside')
-        charts['keywords_chart'].update_layout(height=400)
+        if top_keywords:
+            keywords, frequencies = zip(*top_keywords)
+            
+            charts['keywords_chart'] = px.bar(
+                x=list(frequencies),
+                y=list(keywords),
+                orientation='h',
+                title="Top 10 Most Frequent Keywords",
+                labels={'x': 'Frequency', 'y': 'Keywords'},
+                text=frequencies
+            )
+            charts['keywords_chart'].update_traces(texttemplate='%{text}', textposition='outside')
+            charts['keywords_chart'].update_layout(height=400)
     
     return charts
 
@@ -258,8 +259,8 @@ def main():
             
             if st.button("Add Dictionary") and new_dict_name and new_keywords:
                 keywords_list = [k.strip() for k in new_keywords.split('\n') if k.strip()]
-                # Ensure no duplicates and convert to list
-                keywords_list = list(set(keywords_list))  # Remove duplicates
+                # Ensure no duplicates and convert to list of strings
+                keywords_list = list(set([str(k) for k in keywords_list]))  # Remove duplicates and ensure strings
                 st.session_state.classifier.dictionaries[new_dict_name] = keywords_list
                 st.success(f"Added dictionary: {new_dict_name}")
                 st.rerun()
@@ -267,6 +268,11 @@ def main():
         # Edit existing dictionaries
         st.write("**Current Dictionaries:**")
         for dict_name, keywords in current_dictionaries.items():
+            # Ensure keywords is a list of strings
+            if isinstance(keywords, set):
+                keywords = list(keywords)
+            keywords = [str(k) for k in keywords]  # Ensure all are strings
+            
             with st.expander(f"📝 {dict_name.replace('_', ' ').title()} ({len(keywords)} keywords)"):
                 # Show keywords
                 current_keywords = '\n'.join(keywords)
@@ -281,8 +287,8 @@ def main():
                 with col1:
                     if st.button("Update", key=f"update_{dict_name}"):
                         keywords_list = [k.strip() for k in edited_keywords.split('\n') if k.strip()]
-                        # Ensure no duplicates and convert to list
-                        keywords_list = list(set(keywords_list))  # Remove duplicates
+                        # Ensure no duplicates and convert to list of strings
+                        keywords_list = list(set([str(k) for k in keywords_list]))
                         st.session_state.classifier.dictionaries[dict_name] = keywords_list
                         st.success(f"Updated {dict_name}")
                         st.rerun()
@@ -300,13 +306,13 @@ def main():
         
         # Export current dictionaries
         try:
-            # Ensure all dictionary values are lists (not sets or other types)
+            # Ensure all dictionary values are lists of strings
             clean_dictionaries = {}
             for key, value in st.session_state.classifier.dictionaries.items():
                 if isinstance(value, (list, tuple)):
-                    clean_dictionaries[key] = list(value)
+                    clean_dictionaries[key] = [str(item) for item in value]
                 elif isinstance(value, set):
-                    clean_dictionaries[key] = list(value)
+                    clean_dictionaries[key] = [str(item) for item in value]
                 else:
                     clean_dictionaries[key] = [str(value)]
             
@@ -330,9 +336,9 @@ def main():
                 cleaned_dict_data = {}
                 for key, value in dict_data.items():
                     if isinstance(value, (list, tuple)):
-                        cleaned_dict_data[key] = list(value)
+                        cleaned_dict_data[key] = [str(item) for item in value]
                     elif isinstance(value, set):
-                        cleaned_dict_data[key] = list(value)
+                        cleaned_dict_data[key] = [str(item) for item in value]
                     else:
                         cleaned_dict_data[key] = [str(value)]
                 
@@ -381,11 +387,21 @@ def main():
         with col2:
             st.subheader("📚 Current Dictionaries")
             for dict_name, keywords in current_dictionaries.items():
+                # Ensure keywords is a list of strings for display
+                if isinstance(keywords, set):
+                    keywords = list(keywords)
+                keywords = [str(k) for k in keywords]  # Ensure all are strings
+                
                 with st.expander(f"{dict_name.replace('_', ' ').title()}"):
                     st.write(f"**{len(keywords)} keywords:**")
-                    st.write(", ".join(keywords[:10]))
-                    if len(keywords) > 10:
-                        st.write(f"... and {len(keywords) - 10} more")
+                    # Safe join with string conversion
+                    if keywords:
+                        display_keywords = keywords[:10]
+                        st.write(", ".join(display_keywords))
+                        if len(keywords) > 10:
+                            st.write(f"... and {len(keywords) - 10} more")
+                    else:
+                        st.write("No keywords defined")
     
     with tab2:
         if not st.session_state.data_loaded:
@@ -414,7 +430,7 @@ def main():
                 st.subheader("📖 Sample Text Preview")
                 sample_texts = current_data[text_column].head(3).tolist()
                 for i, text in enumerate(sample_texts, 1):
-                    st.write(f"**Sample {i}:** {text}")
+                    st.write(f"**Sample {i}:** {str(text)}")
                 
                 # Run analysis button
                 if st.button("🚀 Run Classification", type="primary"):
@@ -431,6 +447,7 @@ def main():
                             st.rerun()
                         except Exception as e:
                             st.error(f"❌ Error during classification: {e}")
+                            st.error(f"Error details: {str(e)}")
     
     with tab3:
         if not st.session_state.analysis_completed:
